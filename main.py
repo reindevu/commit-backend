@@ -13,7 +13,7 @@ from schemas import SuggestItem, SuggestRequest
 
 limiter = IpRateLimiter(max_requests=RATE_LIMIT_MAX_REQUESTS, window_seconds=RATE_LIMIT_WINDOW_SECONDS)
 
-app = FastAPI(title="Commit Branch Suggester API")
+app = FastAPI(title="Commit Branch Suggester API",root_path="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
@@ -28,7 +28,7 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/api/suggest", response_model=list[SuggestItem])
+@app.post("/suggest", response_model=list[SuggestItem])
 def suggest(payload: SuggestRequest, request: Request) -> list[SuggestItem]:
     ip = get_client_ip(request, trust_proxy=TRUST_PROXY, trusted_proxies=TRUSTED_PROXY_IPS)
     retry_after = limiter.check(ip)
